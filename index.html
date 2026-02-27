@@ -16,15 +16,370 @@
     referrerpolicy="no-referrer" />
 
   <!-- ============================= -->
-  <!--  ستايل عام للصفحة -->
+  <!--  ستايل عام للصفحة - Dark Mode احترافي -->
   <!-- ============================= -->
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: #f2f5fa;
+      background: #0A0C10;  /* أسود عميق ولكن ليس فاحم */
       font-family: "Tajawal", sans-serif;
       direction: rtl;
+      color: #E4E6EB;  /* نص أبيض ناعم */
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* تحسين مظهر شريط التمرير */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1A1D21;  /* خلفية الشريط */
+      border-radius: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3A3F45;  /* لون مقبض الشريط */
+      border-radius: 8px;
+      border: 2px solid #1A1D21;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4A515A;  /* عند التحويم */
+    }
+
+    /* تحسين مظهر النص المحدد */
+    ::selection {
+      background: #2D5F5F;  /* أخضر داكن للانتقاء */
+      color: #FFFFFF;
+    }
+
+    /* تحسين مظهر الروابط */
+    a {
+      color: #6BB5B5;  /* أزرق-أخضر ناعم */
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: #8FD7D7;  /* أفتح قليلاً */
+      text-decoration: underline;
+    }
+
+    /* تحسين مظهر الأزرار العامة */
+    button {
+      font-family: "Tajawal", sans-serif;
+    }
+
+    /* تحسين مظهر الحقول */
+    input, textarea, select {
+      background-color: #1E2126;
+      border: 1px solid #373C43;
+      color: #E4E6EB;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: "Tajawal", sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #6BB5B5;
+      box-shadow: 0 0 0 3px rgba(107, 181, 181, 0.2);
+    }
+
+    /* تحسين مظهر البطاقات */
+    .card {
+      background: #15181C;  /* أسود ناعم للبطاقات */
+      border-radius: 16px;
+      border: 1px solid #2C3036;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    /* تحسين مظهر الجداول */
+    table {
+      background-color: #15181C;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2C3036;
+    }
+
+    th {
+      background-color: #1E2126;
+      color: #E4E6EB;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 2px solid #373C43;
+    }
+
+    td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #2C3036;
+      color: #B0B3B8;
+    }
+
+    tr:hover td {
+      background-color: #1A1D21;
+    }
+
+    /* تحسين مظهر القوائم المنسدلة */
+    select option {
+      background-color: #1E2126;
+      color: #E4E6EB;
+    }
+
+    /* تحسين مظهر التبويجات */
+    .tab {
+      background: #15181C;
+      border: 1px solid #2C3036;
+      color: #B0B3B8;
+    }
+
+    .tab.active {
+      background: #1E2126;
+      color: #6BB5B5;
+      border-color: #6BB5B5;
+    }
+
+    /* تحسين مظهر الرسائل */
+    .alert {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 12px 0;
+      border: 1px solid transparent;
+    }
+
+    .alert-info {
+      background: rgba(107, 181, 181, 0.1);
+      border-color: #6BB5B5;
+      color: #8FD7D7;
+    }
+
+    .alert-success {
+      background: rgba(76, 175, 80, 0.1);
+      border-color: #4CAF50;
+      color: #81C784;
+    }
+
+    .alert-warning {
+      background: rgba(255, 152, 0, 0.1);
+      border-color: #FF9800;
+      color: #FFB74D;
+    }
+
+    .alert-error {
+      background: rgba(244, 67, 54, 0.1);
+      border-color: #F44336;
+      color: #E57373;
+    }
+
+    /* تحسين مظهر الأيقونات */
+    i, .icon {
+      color: #8A8F99;
+      transition: color 0.2s ease;
+    }
+
+    i:hover, .icon:hover {
+      color: #6BB5B5;
+    }
+
+    /* تحسين مظهر الفوتر */
+    footer {
+      background: #15181C;
+      border-top: 1px solid #2C3036;
+      color: #8A8F99;
+    }
+
+    /* تخصيص للـ Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      /* هذا سيعمل تلقائياً إذا كان النظام في الوضع الداكن */
+      body {
+        background: #0A0C10;
+      }
+    }
+
+    /* تحسين التباين للنصوص */
+    h1, h2, h3, h4, h5, h6 {
+      color: #FFFFFF;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: #B0B3B8;
+    }
+
+    small, .text-muted {
+      color: #8A8F99;
+    }
+
+    /* تحسين مظهر الحدود */
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #2C3036, transparent);
+      margin: 20px 0;
+    }
+
+    /* تحسين مظهر القوائم */
+    ul, ol {
+      color: #B0B3B8;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    /* تحسين مظهر الكود */
+    code, pre {
+      background: #1E2126;
+      border: 1px solid #373C43;
+      border-radius: 6px;
+      color: #E4E6EB;
+      font-family: 'Courier New', monospace;
+    }
+
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    /* تحسين مظهر المودال */
+    .modal {
+      background: rgba(10, 12, 16, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      background: #15181C;
+      border: 1px solid #2C3036;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* تحسين مظهر التولتيب */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      background: #2C3036;
+      color: #E4E6EB;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      border: 1px solid #373C43;
+    }
+
+    [data-tooltip]:hover:before {
+      opacity: 1;
+      visibility: visible;
+      bottom: calc(100% + 10px);
+    }
+
+    /* تحسين مظهر الروابط في القوائم */
+    .nav-link {
+      color: #B0B3B8;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: #1E2126;
+      color: #FFFFFF;
+    }
+
+    .nav-link.active {
+      background: #2D5F5F;
+      color: #FFFFFF;
+    }
+
+    /* تحسين مظهر الأزرار الرئيسية */
+    .btn-primary {
+      background: #2D5F5F;
+      border: 1px solid #3D7A7A;
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: #3D7A7A;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(45, 95, 95, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #373C43;
+      color: #B0B3B8;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #1E2126;
+      border-color: #4A515A;
+      color: #FFFFFF;
+    }
+
+    /* تحسين مظهر الحقول المعطلة */
+    input:disabled, textarea:disabled, select:disabled, button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.3);
+    }
+
+    /* تحسين مظهر شارات العداد */
+    .badge {
+      background: #2C3036;
+      color: #E4E6EB;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(76, 175, 80, 0.2);
+      color: #81C784;
+      border: 1px solid #4CAF50;
+    }
+
+    .badge-warning {
+      background: rgba(255, 152, 0, 0.2);
+      color: #FFB74D;
+      border: 1px solid #FF9800;
+    }
+
+    .badge-error {
+      background: rgba(244, 67, 54, 0.2);
+      color: #E57373;
+      border: 1px solid #F44336;
     }
   </style>
 </head>
