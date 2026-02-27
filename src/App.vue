@@ -1,662 +1,717 @@
-<template>
-  <div id="app">
-    <!-- زر تغيير اللغة -->
-    <div class="circle-btn lang-btn" @click="toggleLanguageMenu">
-      🌐
-      <span class="lang-code">{{ currentLang }}</span>
-    </div>
-
-    <!-- زر بابلوين (سانتا) لعرض السنة الجديدة -->
-    <div class="bubble-chat-btn" @click="toggleNewYearMessage">
-      <div class="bubble-chat-icon">🎅🏻</div>
-      <div class="bubble-notification">🎉</div>
-    </div>
-
-    <!-- نافذة بابلوين للرسالة -->
-    <div v-if="showNewYearMessage" class="bubble-chat-overlay" @click="closeNewYearMessage">
-      <div class="bubble-chat-window" @click.stop>
-        <div class="bubble-chat-header">
-          <div class="bubble-chat-title">
-            <div class="bubble-avatar">🎁</div>
-            <div>
-              <div class="bubble-sender">Mall of the World</div>
-              <div class="bubble-time">عرض خاص</div>
-            </div>
-          </div>
-          <button class="bubble-close-btn" @click="closeNewYearMessage">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-        
-        <div class="bubble-chat-body">
-          <div class="bubble-message bubble-received">
-            <div class="bubble-tail"></div>
-            <div class="bubble-content">
-              <strong>🎉✨ عرض رأس السنة الجديد – فرصة ذهبية! ✨🎉</strong>
-              <br><br>
-              بمناسبة حلول رأس السنة الجديدة، يسرّ Mall of the World أن يقدّم لكم عرضًا خاصًا ومحدودًا 🎁
-              <br><br>
-              <strong>🔔 تفاصيل العرض:</strong><br>
-              قم بدعوة 10 أشخاص جدد للتسجيل في المنصة، ويجب على كل شخص منهم القيام بشحن رصيد بقيمة 100 دولار.
-              <br><br>
-              <strong>🎁 المكافأة:</strong><br>
-              عند استيفاء الشروط كاملة، ستحصل مباشرة على جائزة نقدية بقيمة 100 دولار 💰
-              <br><br>
-              <strong>📌 الشروط:</strong><br>
-              • الدعوات يجب أن تكون عن طريق رابط الإحالة الخاص بك<br>
-              • كل مستخدم مدعو يجب أن يشحن 100 دولار على الأقل<br>
-              • العرض ساري لفترة محدودة بمناسبة رأس السنة
-              <br><br>
-              <strong>🚀 لا تفوّت الفرصة، ابدأ بدعوة أصدقائك الآن واحتفل بالعام الجديد مع أرباح حقيقية!</strong>
-              <br><br>
-              <em>🎆 Mall of the World يتمنى لكم سنة جديدة مليئة بالنجاح والربح 🎆</em>
-            </div>
-            <div class="bubble-time">12:00</div>
-          </div>
-        </div>
-        
-        <div class="bubble-chat-footer">
-          <button class="bubble-action-btn" @click="closeNewYearMessage">
-            فهمت وشكرًا! 🎯
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- زر الدعم -->
-    <a class="circle-btn support-btn"
-       href="https://t.me/mall_oftheworld"
-       target="_blank">
-      🎧
-    </a>
-
-    <!-- زر انستغرام -->
-    <a class="circle-btn instagram-btn"
-       href="https://www.instagram.com/mall_oftheworld?igsh=OXR1emp3N2k2d2Yz"
-       target="_blank">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7.8 2H16.2C19.4 2 22 4.6 22 7.8V16.2C22 19.4 19.4 22 16.2 22H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 15.5C13.933 15.5 15.5 13.933 15.5 12C15.5 10.067 13.933 8.5 12 8.5C10.067 8.5 8.5 10.067 8.5 12C8.5 13.933 10.067 15.5 12 15.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17.5 6.5H17.51" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
-
-    <!-- قائمة اللغات -->
-    <div v-if="showLangMenu" class="lang-menu">
-      <div 
-        class="lang-item" 
-        v-for="l in languages" 
-        :key="l.code"
-        @click="setLanguage(l)"
-      >
-        {{ l.name }}
-      </div>
-    </div>
-
-    <!-- الصفحات -->
-    <router-view />
-
-    <!-- ⭐ شريط التنقل بدون وميض ⭐ -->
-    <BottomNav v-if="authLoaded && showBottomNav" />
-
-    <!-- إعلان Popup -->
-    <div id="companyAd" class="ad-overlay" v-if="showAd">
-      <div class="ad-box">
-        <h2>إعلان</h2>
-
-        <div class="ad-content">
-          <p>
-            🎉🎉🎉🎉 مرحبا بالجميع! تأسست Mall of the world في سنغافورة في 20 أغسطس 2021 ومقرها حاليًا في منطقة الأعمال المركزية في سنغافورة. نحن شركة استثمار في التجارة الإلكترونية مع فريق تقني قوي وقوة مالية قوية. يتعاون Mall of the world مع عشرات شركات التجارة الإلكترونية مثل Amazon و eBay و Tiktok و Aliexpress و Alibaba و Shopee ، إلخ. لمساعدة التجار على زيادة مبيعات المنتجات الخاصة بهم ، ويمكننا أيضًا تحقيق أرباح منه. عندما تتصاعد على منصتنا ، تشارك في مساعدة البائعين على زيادة المبيعات ، بحيث يمكنك أيضًا كسب المال منها. حتى يتمكن الجميع من إعادة الشحن بثقة ، هذا مشروع جيد لجني الأموال. 🔇🔇🔇
-            <br><br>
-            👍1: الحد الأدنى لمبلغ إعادة الشحن: 12 USDT ، الحد الأدنى للسحب النقدي: 3 USDT
-            <br>
-            💰2: تستثمر المنصة على مستوى العالم ، لذا فإن الاستثمار يدعم فقط إعادة شحن العملة المشفرة.
-            <br>
-            🌈3: وقت إعادة تعيين المهمة هو الساعة 12 ظهراً في سنغافورة. يمكنك الحصول على الربح من خلال استكمال أوامر التاجر كل يوم (مرة واحدة في اليوم ، صالحة لمدة 365 يومًا).
-            <br>
-            🕯4: يمكنك سحب النقد مرة واحدة فقط في اليوم ، لا يوجد حد زمني ، يمكنك سحب النقد في أي وقت ، ووقت الانسحاب هو 1 إلى 5 دقائق ، والحد الأدنى لمبلغ السحب هو 3 USDT ، ولا يوجد حد أعلى.
-            <br><br>
-            عندما يصل مبلغ إعادة الشحن إلى المبلغ المقابل التالي ، سيتم ترقية الحساب تلقائيًا إلى VIP. كلما زادت مبلغ إعادة الشحن ، كلما زاد عدد USDT في اليوم!
-            <br><br>
-            👍vip1: إعادة شحن 12 USDT ، الإيرادات اليومية 3 USDT
-            <br>
-            👍vip2: إعادة الشحن 52 USDT ، الدخل اليومي 13 USDT
-            <br>
-            👍vip3: إعادة شحن 100 USDT ، الدخل اليومي 26 USDT
-            <br>
-            👍vip4: إعادة شحن 300 USDT ، الدخل اليومي 82 USDT
-            <br>
-            👍VIP5: إعادة شحن 500 USDT ، الدخل اليومي 145 USDT
-            <br>
-            👍vip6: إعادة شحن 1500 USDT ، الدخل اليومي 479 USDT
-            <br>
-            👍VIP7: إعادة شحن 3000 USDT ، الدخل اليومي 1078 USDT
-            <br>
-            👍VIP8: إعادة شحن 5000 USDT ، الدخل اليومي 2000 USDT
-            <br>
-            👍vip9: إعادة شحن 10000 USDT ، الدخل اليومي USDT
-            <br>
-            👍VIP10: إعادة شحن 30000 USDT ، الدخل اليومي 17699 USDT
-            <br>
-            👍VIP11: إعادة شحن 90،000 دولار أمريكي ، الدخل اليومي 81،818 USDT
-            <br><br>
-            يمكن للمستخدمين Mall of the world الترويج لنظامنا الأساسي من خلال روابط التوصية ودعوة أصدقائك للانضمام إلينا على Facebook و Twitter و Instagram و YouTube و Tiktok و Kaokao و WhatsApp و Telegram. عندما يسجل شخص ما وينتهي من Top-Up ، تحصل على مكافأة تصل إلى 9 ٪.
-            <br><br>
-            🤝team المستوى 3 إعادة شحن مكافأة تصل إلى 9 ٪
-            <br>
-            🤝level 1 مكافأة إعادة شحن الأعضاء: 6 ٪
-            <br>
-            🤝level 2 مكافأة إعادة شحن الأعضاء: 2 ٪
-            <br>
-            🤝level 3 مكافأة إعادة شحن الأعضاء: 1 ٪
-            <br>
-            🤑team إعادة شحن المستوى الأول البالغ 1000 دولار أمريكي ، ويمكنك الحصول على 60 USDT
-            <br>
-            🤑team إعادة الشحن الثانوي البالغ 1000 دولار أمريكي ، يمكنك الحصول على 20 USDT
-            <br>
-            🤑team المستوى 3 إعادة شحن 1000 USDT ، ويمكنك الحصول على 10 USDT
-          </p>
-        </div>
-
-        <button @click="closeAd">أنا أعرف</button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-import BottomNav from "./components/BottomNav.vue";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-export default {
-  components: { BottomNav },
-
-  data() {
-    return {
-      authLoaded: false,
-      user: null,
-
-      showLangMenu: false,
-      currentLang: "AR", // الافتراضي
-
-      showAd: false,  // حالة الإعلان
-      showNewYearMessage: false, // حالة رسالة السنة الجديدة
-
-      languages: [
-        { name: "Polski", code: "PL" },
-        { name: "English", code: "EN" },
-        { name: "Français", code: "FR" },
-        { name: "Italiano", code: "IT" },
-        { name: "日本語", code: "JP" },
-        { name: "한국인", code: "KR" },
-        { name: "Deutsch", code: "DE" },
-        { name: "Русский", code: "RU" },
-        { name: "Tiếng Việt", code: "VI" },
-        { name: "Português", code: "PT" },
-        { name: "Türkçe", code: "TR" },
-        { name: "Español", code: "ES" },
-        { name: "فارسی", code: "FA" },
-        { name: "العربي", code: "AR" }
-      ]
-    };
-  },
-
-  created() {
-    const auth = getAuth();
-
-    // استرجاع اللغة المحفوظة
-    const saved = localStorage.getItem("app_language");
-    if (saved) this.currentLang = saved;
-
-    onAuthStateChanged(auth, (u) => {
-      this.user = u;
-      this.authLoaded = true;
-      
-      // إظهار الإعلان بعد تسجيل الدخول
-      if (this.user) {
-        this.showAd = true;
-      }
-    });
-  },
-
-  computed: {
-    showBottomNav() {
-      if (!this.user) return false;
-
-      const path = this.$route.path;
-      const hidden = ["/login", "/register", "/admin", "/403"];
-
-      return !hidden.some((r) => path.startsWith(r));
-    }
-  },
-
-  methods: {
-    toggleLanguageMenu() {
-      this.showLangMenu = !this.showLangMenu;
-    },
-
-    setLanguage(lang) {
-      this.currentLang = lang.code;
-      localStorage.setItem("app_language", lang.code);
-      this.showLangMenu = false;
-    },
-
-    closeAd() {
-      this.showAd = false; // إغلاق الإعلان
-    },
-
-    toggleNewYearMessage() {
-      this.showNewYearMessage = !this.showNewYearMessage;
-    },
-
-    closeNewYearMessage() {
-      this.showNewYearMessage = false;
-    }
-  }
-};
-</script>
-
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام توزيع الخبز</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-body {
-  margin: 0;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* الأزرار الأساسية - تم التصغير */
-.circle-btn {
-  position: fixed;
-  bottom: 80px; /* تغيير من top إلى bottom */
-  width: 40px; /* تصغير الحجم */
-  height: 40px; /* تصغير الحجم */
-  background: #ffffff;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #333;
-  font-size: 18px; /* تصغير حجم الخط */
-  cursor: pointer;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  flex-direction: column;
-  text-decoration: none;
-  transition: all 0.3s ease;
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    text-align: center; 
+    direction: rtl; 
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 30px 20px;
 }
 
-.lang-code {
-  font-size: 9px; /* تصغير حجم كود اللغة */
-  margin-top: -3px;
-  opacity: 0.8;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+    position: relative;
+    min-height: 600px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* وضع الأزرار في أسفل الشاشة بجانب بعضها */
-.lang-btn {
-  right: 15px;
-  bottom: 80px; /* نفس ارتفاع بقية الأزرار */
+h2 { 
+    color: #0f3b2b;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
 }
 
-.support-btn {
-  right: 65px; /* بعد زر اللغة */
-  bottom: 80px;
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #2e7d5e, #4caf7e);
+    border-radius: 3px;
 }
 
-.instagram-btn {
-  right: 115px; /* بعد زر الدعم */
-  bottom: 80px;
+table { 
+    width: 100%; 
+    margin-top: 25px; 
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    background: transparent;
 }
 
-/* زر بابلوين (سانتا) - تم التصغير */
-.bubble-chat-btn {
-  position: fixed;
-  right: 165px; /* بعد زر انستغرام */
-  bottom: 80px; /* نفس ارتفاع بقية الأزرار */
-  width: 40px; /* تصغير الحجم */
-  height: 40px; /* تصغير الحجم */
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-  transition: all 0.3s ease;
+th { 
+    background: linear-gradient(135deg, #1e4d3a, #2e7d5e);
+    color: white;
+    padding: 16px 12px;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    border: none;
 }
 
-.bubble-chat-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4);
+th:first-child {
+    border-radius: 12px 0 0 12px;
 }
 
-.bubble-chat-icon {
-  font-size: 20px; /* تصغير الحجم */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+th:last-child {
+    border-radius: 0 12px 12px 0;
 }
 
-.bubble-notification {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  background: #22c55e;
-  color: white;
-  width: 16px; /* تصغير الحجم */
-  height: 16px; /* تصغير الحجم */
-  border-radius: 50%;
-  font-size: 10px; /* تصغير حجم الخط */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse 2s infinite;
+td { 
+    background-color: white;
+    padding: 14px 12px; 
+    text-align: center;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    font-size: 14px;
+    color: #334155;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+tr td:first-child {
+    border-radius: 10px 0 0 10px;
+    font-weight: 600;
+    color: #1e4d3a;
 }
 
-/* زر انستغرام - تم التصغير */
-.instagram-btn svg {
-  width: 20px; /* تصغير حجم الأيقونة */
-  height: 20px;
-  fill: none;
-  stroke: #E1306C;
-  stroke-width: 1.5;
+tr td:last-child {
+    border-radius: 0 10px 10px 0;
 }
 
-/* نافذة بابلوين */
-.bubble-chat-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
+tr:hover td {
+    background-color: #f8fafc;
+    transition: background-color 0.2s ease;
 }
 
-.bubble-chat-window {
-  width: 90%;
-  max-width: 400px;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  animation: bubbleSlide 0.3s ease;
+#total { 
+    font-size: 24px; 
+    background: linear-gradient(135deg, #1e4d3a, #2e7d5e);
+    color: white;
+    margin: 25px 0 15px;
+    font-weight: 600;
+    padding: 16px 24px;
+    border-radius: 50px;
+    display: inline-block;
+    box-shadow: 0 10px 20px -5px rgba(30, 77, 58, 0.3);
+    letter-spacing: 0.5px;
 }
 
-@keyframes bubbleSlide {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
+#reader {
+    width: 100%;
+    max-width: 450px;
+    margin: 20px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.15);
+    border: 3px solid white;
+}
+
+.status-success {
+    color: #2e7d5e;
+    font-weight: 600;
+    padding: 12px 24px;
+    font-size: 18px;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-radius: 50px;
+    display: inline-block;
+    margin: 10px 0;
+    border: 1px solid #a5d6a7;
+}
+
+.status-error {
+    color: #b71c1c;
+    font-weight: 600;
+    padding: 12px 24px;
+    font-size: 18px;
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border-radius: 50px;
+    display: inline-block;
+    margin: 10px 0;
+    border: 1px solid #ef9a9a;
+}
+
+.status-ignored {
+    color: #6b6b6b;
+    font-weight: 600;
+    padding: 12px 24px;
+    font-size: 18px;
+    background: linear-gradient(135deg, #f5f5f5, #eeeeee);
+    border-radius: 50px;
+    display: inline-block;
+    margin: 10px 0;
+    border: 1px solid #bdbdbd;
+}
+
+.date-display {
+    font-size: 16px;
+    color: #64748b;
+    margin: 10px 0 20px;
+    direction: ltr;
+    background: #f8fafc;
+    padding: 8px 16px;
+    border-radius: 50px;
+    display: inline-block;
+    border: 1px solid #e2e8f0;
+}
+
+/* زر الإعدادات */
+.settings-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px 0;
+}
+
+.settings-button {
+    background: linear-gradient(135deg, #334155, #475569);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px -4px rgba(51, 65, 85, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.settings-button:hover {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(51, 65, 85, 0.4);
+}
+
+.settings-button:active {
     transform: translateY(0);
-    opacity: 1;
-  }
 }
 
-.bubble-chat-header {
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  color: white;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.gear-icon {
+    display: inline-block;
+    animation: rotate 10s linear infinite;
+    font-size: 22px;
 }
 
-.bubble-chat-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.bubble-avatar {
-  width: 40px;
-  height: 40px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: #dc2626;
+.settings-menu {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    min-width: 280px;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    padding: 16px;
+    z-index: 1000;
+    border: 1px solid #e2e8f0;
 }
 
-.bubble-sender {
-  font-weight: bold;
-  font-size: 16px;
+.settings-menu.show {
+    display: block;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.bubble-time {
-  font-size: 12px;
-  opacity: 0.8;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
-.bubble-close-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  transition: background 0.2s;
+.settings-menu button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: right;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.bubble-close-btn:hover {
-  background: rgba(255,255,255,0.2);
+.thursday-menu-btn {
+    background: linear-gradient(135deg, #9333ea, #a855f7);
+    color: white;
+    box-shadow: 0 4px 12px -2px rgba(147, 51, 234, 0.3);
 }
 
-/* جسم المحادثة */
-.bubble-chat-body {
-  padding: 20px;
-  max-height: 400px;
-  overflow-y: auto;
+.thursday-menu-btn:hover {
+    background: linear-gradient(135deg, #7e22ce, #9333ea);
+    transform: translateX(-2px);
 }
 
-.bubble-message {
-  position: relative;
-  margin-bottom: 16px;
+.thursday-menu-btn.active {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    box-shadow: 0 4px 12px -2px rgba(22, 163, 74, 0.3);
 }
 
-.bubble-received {
-  text-align: right;
+.reset-menu-btn {
+    background: linear-gradient(135deg, #ea580c, #f97316);
+    color: white;
+    box-shadow: 0 4px 12px -2px rgba(234, 88, 12, 0.3);
 }
 
-.bubble-tail {
-  position: absolute;
-  bottom: -8px;
-  right: 10px;
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid #e5e7eb;
+.reset-menu-btn:hover {
+    background: linear-gradient(135deg, #c2410c, #ea580c);
+    transform: translateX(-2px);
 }
 
-.bubble-content {
-  background: #e5e7eb;
-  padding: 12px 16px;
-  border-radius: 18px;
-  border-top-right-radius: 4px;
-  display: inline-block;
-  max-width: 100%;
-  text-align: right;
-  line-height: 1.5;
-  font-size: 14px;
+.download-menu-btn {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.3);
 }
 
-.bubble-message .bubble-time {
-  font-size: 11px;
-  color: #666;
-  margin-top: 4px;
-  text-align: right;
+.download-menu-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    transform: translateX(-2px);
 }
 
-/* تذييل بابلوين */
-.bubble-chat-footer {
-  padding: 16px;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+.thursday-indicator {
+    margin: 15px auto;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-block;
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    color: #9333ea;
+    border: 1px solid #d8b4fe;
+    box-shadow: 0 4px 10px -2px rgba(147, 51, 234, 0.15);
 }
 
-.bubble-action-btn {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
+.thursday-indicator.inactive {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
 }
 
-.bubble-action-btn:hover {
-  background: linear-gradient(135deg, #b91c1c, #dc2626);
+/* تنسيق الفوتر */
+.footer {
+    margin-top: 40px;
+    padding: 20px 0 0;
 }
 
-/* قائمة اللغات - تم تعديل موقعها */
-.lang-menu {
-  position: fixed;
-  bottom: 130px; /* فوق الأزرار مباشرة */
-  right: 15px;
-  width: 130px; /* تصغير الحجم */
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  z-index: 9999;
-  overflow: hidden;
+/* تحسين مظهر الماسح الضوئي */
+#reader__scan_region {
+    background: #f8fafc;
 }
 
-.lang-item {
-  padding: 8px 10px; /* تصغير الحشو */
-  font-size: 14px; /* تصغير حجم الخط */
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  text-align: right;
+#reader__dashboard_section {
+    padding: 16px !important;
 }
 
-.lang-item:last-child {
-  border-bottom: none;
+#reader__dashboard_section button {
+    background: linear-gradient(135deg, #1e4d3a, #2e7d5e) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
 }
 
-.lang-item:hover {
-  background: #f5faff;
+#reader__dashboard_section button:hover {
+    background: linear-gradient(135deg, #0f3b2b, #1e4d3a) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* إعلان Popup */
-.ad-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.ad-box {
-  background: #eaf2ff;
-  width: 90%;
-  max-width: 400px;
-  margin: 15% auto;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
-}
-
-.ad-box h2 {
-  background: #3b82f6;
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.ad-content {
-  max-height: 250px;
-  overflow-y: auto;
-  margin: 10px 0;
-  font-size: 14px;
-}
-
-.ad-box button {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* تكييفات للهواتف */
+/* تحسين للجوال */
 @media (max-width: 768px) {
-  /* ضبط المسافات للأزرار في الهواتف */
-  .circle-btn, 
-  .bubble-chat-btn {
-    bottom: 70px; /* رفع قليلاً فوق شريط التنقل */
-  }
-  
-  .lang-btn {
-    right: 15px;
-  }
-  
-  .support-btn {
-    right: 65px;
-  }
-  
-  .instagram-btn {
-    right: 115px;
-  }
-  
-  .bubble-chat-btn {
-    right: 165px;
-  }
-  
-  .bubble-chat-window {
-    width: 95%;
-    max-height: 80vh;
-  }
-  
-  /* إذا كانت الشاشة صغيرة جداً، نجعل الأزرار أقرب */
-  @media (max-width: 350px) {
-    .circle-btn,
-    .bubble-chat-btn {
-      width: 36px;
-      height: 36px;
-      font-size: 16px;
-      bottom: 75px;
+    body {
+        padding: 15px 10px;
     }
     
-    .lang-btn {
-      right: 10px;
+    .container {
+        padding: 20px;
     }
     
-    .support-btn {
-      right: 55px;
+    th {
+        padding: 12px 8px;
+        font-size: 13px;
     }
     
-    .instagram-btn {
-      right: 100px;
+    td {
+        padding: 10px 6px;
+        font-size: 12px;
     }
     
-    .bubble-chat-btn {
-      right: 145px;
+    #total {
+        font-size: 20px;
+        padding: 12px 20px;
     }
     
-    .instagram-btn svg {
-      width: 18px;
-      height: 18px;
+    h2 {
+        font-size: 24px;
     }
-  }
 }
 </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🍞 نظام توزيع ربطات الخبز</h2>
+    <div class="date-display" id="currentDate"></div>
+    
+    <div id="thursdayIndicator" class="thursday-indicator inactive">
+        ⚪ وضع الخميس غير مفعل
+    </div>
+
+    <h3 id="status" class="status-success">جاهز للمسح</h3>
+
+    <div id="reader"></div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>التسلسل</th>
+                <th>اسم المستفيد</th>
+                <th>عدد الربطات</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <div id="total">إجمالي الربطات: 0</div>
+
+    <!-- زر الإعدادات في الأسفل -->
+    <div class="footer">
+        <div class="settings-container">
+            <button class="settings-button" onclick="toggleSettingsMenu()">
+                <span class="gear-icon">⚙️</span> الإعدادات
+            </button>
+            <div class="settings-menu" id="settingsMenu">
+                <button class="thursday-menu-btn" id="thursdayMenuBtn" onclick="toggleThursdayMode()">
+                    <span>🟣</span> تفعيل وضع الخميس
+                </button>
+                <button class="reset-menu-btn" onclick="resetToday()">
+                    <span>🔄</span> تصفير اليوم
+                </button>
+                <button class="download-menu-btn" onclick="downloadCSV()">
+                    <span>📥</span> تحميل التقرير
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let counter = 1;
+let totalBread = 0;
+let today = new Date().toISOString().slice(0,10);
+let scannedToday = JSON.parse(localStorage.getItem(today)) || {};
+let scanHistory = JSON.parse(localStorage.getItem('history_' + today)) || [];
+let thursdayMode = JSON.parse(localStorage.getItem('thursdayMode_' + today)) || false;
+
+// متغيرات لمنع التكرار
+let lastScanTime = 0;
+let lastScannedText = '';
+const SCAN_DELAY = 3000; // 3 ثواني
+
+// فتح وإغلاق قائمة الإعدادات
+function toggleSettingsMenu() {
+    const menu = document.getElementById('settingsMenu');
+    menu.classList.toggle('show');
+}
+
+// إغلاق القائمة عند النقر خارجها
+window.onclick = function(event) {
+    if (!event.target.matches('.settings-button') && !event.target.matches('.settings-button *')) {
+        const menu = document.getElementById('settingsMenu');
+        if (menu.classList.contains('show')) {
+            menu.classList.remove('show');
+        }
+    }
+}
+
+// تحديث واجهة وضع الخميس
+function updateThursdayUI() {
+    const indicator = document.getElementById('thursdayIndicator');
+    const menuBtn = document.getElementById('thursdayMenuBtn');
+    
+    if (thursdayMode) {
+        indicator.className = 'thursday-indicator';
+        indicator.innerHTML = '🟣 وضع الخميس مفعل - مضاعفة ربطات الـ 1';
+        menuBtn.innerHTML = '<span>⚪</span> إلغاء وضع الخميس';
+        menuBtn.classList.add('active');
+    } else {
+        indicator.className = 'thursday-indicator inactive';
+        indicator.innerHTML = '⚪ وضع الخميس غير مفعل';
+        menuBtn.innerHTML = '<span>🟣</span> تفعيل وضع الخميس';
+        menuBtn.classList.remove('active');
+    }
+}
+
+// تبديل وضع الخميس
+function toggleThursdayMode() {
+    thursdayMode = !thursdayMode;
+    localStorage.setItem('thursdayMode_' + today, JSON.stringify(thursdayMode));
+    updateThursdayUI();
+}
+
+// دالة للحصول على التاريخ بالإنجليزية (day/month)
+function getEnglishDate() {
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    return {
+        short: `${day}/${month}/${year}`,
+        medium: `${monthNames[month-1]} ${day}, ${year}`,
+        display: `${monthNames[month-1]} ${day}`
+    };
+}
+
+// عرض التاريخ الحالي
+function updateDateDisplay() {
+    let dateInfo = getEnglishDate();
+    document.getElementById('currentDate').innerText = dateInfo.medium;
+}
+
+// تحميل البيانات المحفوظة
+function loadSavedData() {
+    if (scanHistory.length > 0) {
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+        counter = 1;
+        totalBread = 0;
+        
+        scanHistory.forEach(record => {
+            addRowToTable(record.name, record.count, record.time);
+        });
+    }
+    updateThursdayUI();
+}
+
+// إضافة صف للجدول
+function addRowToTable(name, count, time) {
+    let tableBody = document.getElementById('tableBody');
+    let row = tableBody.insertRow();
+    
+    row.insertCell(0).innerText = counter++;
+    row.insertCell(1).innerText = name;
+    row.insertCell(2).innerText = count;
+    row.insertCell(3).innerText = time;
+    
+    totalBread += count;
+    document.getElementById("total").innerText = "إجمالي الربطات: " + totalBread;
+}
+
+// إنشاء صوت نجاح
+function playSuccessSound() {
+    let audio = new Audio();
+    audio.src = 'data:audio/wav;base64,UklGRlwAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAAA8AP8A/gD/AP8A/wD/AP8A';
+    audio.play().catch(e => console.log('صوت غير مدعوم'));
+}
+
+// إنشاء صوت خطأ
+function playErrorSound() {
+    let audio = new Audio();
+    audio.src = 'data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAAAQAQABAAEAAQABAAEAAQABAA==';
+    audio.play().catch(e => console.log('صوت غير مدعوم'));
+}
+
+function onScanSuccess(decodedText) {
+    let currentTime = Date.now();
+    
+    // منع القراءات المتكررة خلال 3 ثواني
+    if (currentTime - lastScanTime < SCAN_DELAY && decodedText === lastScannedText) {
+        return; // تجاهل صامت
+    }
+
+    lastScanTime = currentTime;
+    lastScannedText = decodedText;
+
+    console.log("تم المسح: " + decodedText);
+    
+    // التحقق من الصيغة المحددة
+    let exactMatch = decodedText.match(/^NAME:\s*([^,]+?)\s*,\s*COUNT:\s*(\d+)$/i);
+    
+    if (!exactMatch) {
+        document.getElementById("status").className = "status-ignored";
+        document.getElementById("status").innerText = "⚠️ كود غير معتمد";
+        return;
+    }
+
+    let name = exactMatch[1].trim();
+    let originalCount = parseInt(exactMatch[2]);
+
+    if (isNaN(originalCount) || originalCount <= 0) {
+        document.getElementById("status").className = "status-error";
+        document.getElementById("status").innerText = "❌ عدد غير صالح";
+        playErrorSound();
+        return;
+    }
+
+    // منع التكرار اليومي
+    if (scannedToday[name]) {
+        document.getElementById("status").className = "status-error";
+        document.getElementById("status").innerText = "❌ " + name + " مستلم مسبقاً";
+        playErrorSound();
+        return;
+    }
+
+    // تحديد العدد النهائي (مع مراعاة وضع الخميس)
+    let finalCount = originalCount;
+    
+    // إذا كان وضع الخميس مفعل والعدد الأصلي هو 1 فقط
+    if (thursdayMode && originalCount === 1) {
+        finalCount = 2; // مضاعفة ربطه واحدة فقط
+    }
+
+    // تسجيل الاستلام
+    scannedToday[name] = true;
+    localStorage.setItem(today, JSON.stringify(scannedToday));
+    
+    let dateInfo = getEnglishDate();
+    let recordDate = dateInfo.display;
+    
+    let record = { 
+        name, 
+        count: finalCount, 
+        time: recordDate
+    };
+    
+    scanHistory.push(record);
+    localStorage.setItem('history_' + today, JSON.stringify(scanHistory));
+    
+    addRowToTable(name, finalCount, recordDate);
+
+    // رسالة بسيطة
+    document.getElementById("status").className = "status-success";
+    document.getElementById("status").innerText = "✅ تم تسجيل " + name + " - " + finalCount + " ربطات";
+    
+    playSuccessSound();
+}
+
+function onScanError(error) {
+    if (!error.includes("NotFoundException")) {
+        console.warn("خطأ في المسح: " + error);
+    }
+}
+
+// إعدادات الماسح الضوئي
+let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", 
+    { 
+        fps: 5,
+        qrbox: 250,
+        rememberLastUsedCamera: true,
+        showTorchButtonIfSupported: true
+    }
+);
+
+html5QrcodeScanner.render(onScanSuccess, onScanError);
+
+// تحميل التقرير
+function downloadCSV() {
+    let csv = [];
+    
+    csv.push("التسلسل,اسم المستفيد,عدد الربطات,التاريخ");
+    
+    scanHistory.forEach((record, index) => {
+        csv.push(`${index + 1},${record.name},${record.count},${record.time}`);
+    });
+    
+    csv.push("");
+    csv.push("إجمالي الربطات," + totalBread);
+    csv.push("تاريخ التقرير," + getEnglishDate().medium);
+
+    let file = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8" });
+    let link = document.createElement("a");
+    link.download = "توزيع_الخبز_" + today + ".csv";
+    link.href = URL.createObjectURL(file);
+    link.click();
+    
+    // إغلاق القائمة بعد التحميل
+    document.getElementById('settingsMenu').classList.remove('show');
+}
+
+// تصفير بيانات اليوم
+function resetToday() {
+    if (confirm('هل أنت متأكد من تصفير جميع بيانات اليوم؟')) {
+        scannedToday = {};
+        scanHistory = [];
+        totalBread = 0;
+        counter = 1;
+        thursdayMode = false;
+        
+        localStorage.removeItem(today);
+        localStorage.removeItem('history_' + today);
+        localStorage.removeItem('thursdayMode_' + today);
+        
+        document.getElementById('tableBody').innerHTML = '';
+        document.getElementById("total").innerText = "إجمالي الربطات: 0";
+        document.getElementById("status").className = "status-success";
+        document.getElementById("status").innerText = "تم تصفير البيانات";
+        
+        updateThursdayUI();
+        
+        // إغلاق القائمة بعد التصفير
+        document.getElementById('settingsMenu').classList.remove('show');
+    }
+}
+
+// تحديث التاريخ وعرضه
+updateDateDisplay();
+
+// تحميل البيانات المحفوظة عند بدء التشغيل
+loadSavedData();
+</script>
+
+</body>
+</html>
